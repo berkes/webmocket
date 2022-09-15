@@ -18,7 +18,9 @@ a websocket.
     # 2022-09-15T14:38:07Z INFO  webmocket] Listening on 127.0.0.1:3000
     ```
 
-2. Connect a websocket client (webpage, bot, client, etc.). e.g. [wscat](https://github.com/websockets/wscat). Then send a few messages to the server.
+2. Connect a websocket client (webpage, bot, client, etc.). e.g.
+   [wscat](https://github.com/websockets/wscat). Then send a few messages to
+   the server. *Typically this would be the subject under test*.
     ```bash
     wscat --connect http://127.0.0.1:3000/ws
     # Connected (press CTRL-C to quit)
