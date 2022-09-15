@@ -18,7 +18,7 @@ a websocket.
 
 2. Connect a websocket client (webpage, bot, client, etc.). e.g. [wscat](https://github.com/websockets/wscat). Then send a few messages to the server.
     ```bash
-    wscat --connect http://127.0.0.1:3000
+    wscat --connect http://127.0.0.1:3000/ws
     # Connected (press CTRL-C to quit)
     # > hello, this is the first message
     # > my name is Foo and I am a Bar
