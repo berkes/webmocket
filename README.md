@@ -10,45 +10,39 @@ a websocket.
 
 ## webmocket
 
-\1. Start the webmocket webserver.
+1. Start the webmocket webserver.
+    ```bash
+    RUST_LOG=info cargo run
+    # 2022-09-15T14:38:07Z INFO  webmocket] Listening on 127.0.0.1:3000
+    ```
 
-```bash
-RUST_LOG=info cargo run
-# 2022-09-15T14:38:07Z INFO  webmocket] Listening on 127.0.0.1:3000
-```
+2. Connect a websocket client (webpage, bot, client, etc.). e.g. [wscat](https://github.com/websockets/wscat). Then send a few messages to the server.
+    ```bash
+    wscat --connect http://127.0.0.1:3000
+    # Connected (press CTRL-C to quit)
+    # > hello, this is the first message
+    # > my name is Foo and I am a Bar
+    # > { "message": "this would be JSON" }
+    ```
+    Leave this running for now.
 
-\2. Connect a websocket client (webpage, bot, client, etc.). e.g. [wscat](https://github.com/websockets/wscat).
-  Optionally, send a few messages to the server.
+3. Fire websocket messages to the client using a normal HTTP library. e.g. `curl`.
+    ```
+    curl -X POST -H"Content-type: application/json" \
+      --data '{"content": "Hello from the server"}' \
+      http://127.0.0.1:3000/messages
+    ```
+    We should see wscat print the message to the console.
 
-```bash
-wscat --connect http://127.0.0.1:3000
-# Connected (press CTRL-C to quit)
-# > hello, this is the first message
-# > my name is Foo and I am a Bar
-# > { "message": "this would be JSON" }
-```
-
-Leave this running for now.
-
-\3. Fire websocket messages to the client using a normal HTTP library. e.g. `curl`.
-```
-curl -X POST -H"Content-type: application/json" \
-  --data '{"content": "Hello from the server"}' \
-  http://127.0.0.1:3000/messages
-```
-
-We should see wscat print the message to the console.
-
-\4. Check messages received from client:
-
-```bash
-curl http://127.0.0.1:3000/messages | jq
-# [
-#   "hello, this is the first message",
-#   "my name is Foo and I am a Bar",
-#   "{ \"message\": \"this would be JSON\" }"
-# ]
-```
+4. Check messages received from client:
+    ```bash
+    curl http://127.0.0.1:3000/messages | jq
+    # [
+    #   "hello, this is the first message",
+    #   "my name is Foo and I am a Bar",
+    #   "{ \"message\": \"this would be JSON\" }"
+    # ]
+    ```
 
 ### Install
 
