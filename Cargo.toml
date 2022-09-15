@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 description = "Websocket server for testing and development"
 licence = "MIT"
+homepage = "https://github.com/berkes/webmocket"
+repository = "https://github.com/berkes/webmocket"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
