@@ -27,7 +27,7 @@ impl Config {
         Self {
             port: Self::env_or_default("WEBMOCKET_PORT", default.port),
             address: Self::env_or_default("WEBMOCKET_ADDR", default.address),
-            ws_path: Self::env_or_default("WEBMOCKET_WS_PATH", default.ws_path.clone()),
+            ws_path: Self::env_or_default("WEBMOCKET_WS_PATH", default.ws_path),
         }
     }
 
