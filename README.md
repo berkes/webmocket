@@ -60,6 +60,7 @@ TODO: build binaries and make the avaiable for download.
 
     webmocket
 
+
 ### Configure
 
 Webmocket is configured through env vars. These must be set before starting.
@@ -89,6 +90,12 @@ TODO: CI/CD setup
 ### Deploy
 
 TODO: CI/CD setup
+
+## Limitations
+
+The service is intended for local development or tests (A CI server or such):
+it keeps its database in memory. This means that if you're going to send a lot
+of data to it, it will need a lot of memory.
 
 ## TODO
 
