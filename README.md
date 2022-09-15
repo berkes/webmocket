@@ -8,6 +8,8 @@ Websocket server for testing and development.
 I needed this for e2e and integration testing a bot that listened on
 a websocket.
 
+[![Build Status](https://cloud.drone.io/api/badges/berkes/webmocket/status.svg?ref=refs/heads/main)](https://cloud.drone.io/berkes/webmocket)
+
 ## webmocket
 
 1. Start the webmocket webserver.
