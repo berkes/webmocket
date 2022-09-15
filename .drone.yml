@@ -1,0 +1,10 @@
+kind: pipeline
+name: default
+
+steps:
+- name: test
+  image: rust:1.30
+  commands:
+  - cargo check --verbose --all
+  - cargo fmt --check --verbose --all
+  - cargo test --verbose --all
