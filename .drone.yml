@@ -3,7 +3,7 @@ name: default
 
 steps:
 - name: test
-  image: rust:1.30
+  image: rust:1.62
   commands:
   - cargo check --verbose --all
   - cargo fmt --check --verbose --all
