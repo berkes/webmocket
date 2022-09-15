@@ -97,6 +97,10 @@ The service is intended for local development or tests (A CI server or such):
 it keeps its database in memory. This means that if you're going to send a lot
 of data to it, it will need a lot of memory.
 
+The service does not bind to HTTPS (or SSL), because that is hard to achieve.
+if the client insists on SSL only, you may need to configure some proxy before
+it.
+
 ## TODO
 
 If needs arise, or pull-requests arrive, some additional features could be added:
