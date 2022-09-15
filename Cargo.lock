@@ -719,6 +719,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "20518fe4a4c9acf048008599e464deb21beeae3d3578418951a189c235a7a9a8"
 
 [[package]]
+name = "temp-env"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "139b4bb3d88d6fabf7425bf9502864f9a66c06521d7ab4f3ca15b28ff10310cc"
+dependencies = [
+ "once_cell",
+]
+
+[[package]]
 name = "termcolor"
 version = "1.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -974,6 +983,7 @@ dependencies = [
  "futures",
  "log",
  "serde",
+ "temp-env",
  "tokio",
 ]
 

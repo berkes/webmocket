@@ -56,6 +56,20 @@ TODO: build binaries and make the avaiable for download.
 
     webmocket
 
+### Configure
+
+Webmocket is configured through env vars. These must be set before starting.
+
+| var     |          | default |
+|---------|----------|---------|
+| `WEBMOCKET_ADDR` | IP address of the listening host. Must be a valid IPV4 | 127.0.0.1 |
+| `WEBMOCKET_PORT` | Port on which the service will listen. Must be a valid unix port | 3000 |
+| `WEBMOCKET_WS_PATH` | Path on which the websocket can be connected. Must start with / | /ws |
+
+E.g. to set all variables, one could run:
+```bash
+WEBMOCKET_ADDR=127.0.0.2 WEBMOCKET_PORT=8080 WEBMOCKET_WS_PATH="/messages/user" RUST_LOG=info cargo run
+```
 ### Test
 
 Get the source-code, then

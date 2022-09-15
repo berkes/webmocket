@@ -11,12 +11,15 @@ use futures::{
 };
 use log::{debug, error, info};
 use serde::{Deserialize, Serialize};
-use std::net::SocketAddr;
 use std::{
     fmt::Display,
     sync::{Arc, RwLock},
 };
 use tokio::sync::broadcast;
+
+use crate::config::Config;
+
+mod config;
 
 #[derive(Deserialize)]
 struct MockMessage {
@@ -44,7 +47,8 @@ impl Display for MockMessage {
 #[tokio::main]
 async fn main() {
     env_logger::init();
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let config = Config::from_env();
+    let addr = config.socket_addr();
     info!("Listening on {}", addr);
 
     let received_ws_messages = RwLock::new(vec![]);
@@ -57,7 +61,7 @@ async fn main() {
     let app = Router::new()
         .route("/messages", get(list_messages))
         .route("/messages", post(create_message))
-        .route("/ws", get(ws_handler))
+        .route(&config.ws_path, get(ws_handler))
         .layer(Extension(app_state));
 
     axum::Server::bind(&addr)
