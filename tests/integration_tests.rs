@@ -1,9 +1,11 @@
 use assert_cmd::cargo::cargo_bin;
+use reqwest::header::{HeaderValue, CONTENT_TYPE};
 use std::{
     net::{SocketAddr, TcpStream},
     process::{Child, Command},
     thread,
 };
+use websocket::OwnedMessage;
 use websocket::{ClientBuilder, Message};
 
 #[test]
@@ -44,6 +46,35 @@ fn test_can_read_sent_messages() {
         .expect("map messages");
 
     assert!(resp.contains(&String::from(text)));
+
+    drop(test_control);
+}
+
+#[test]
+fn test_can_send_messages_to_client() {
+    let port = 3003;
+    let process = start_service(port);
+    let test_control = TestControl::new(process);
+
+    wait_ws_reachable(port);
+
+    let mut connection = ClientBuilder::new(&format_url(port, "ws"))
+        .unwrap()
+        .connect_insecure()
+        .unwrap();
+
+    let client = reqwest::blocking::Client::new();
+    let resp = client
+        .post(format_url(port, "messages"))
+        .header(CONTENT_TYPE, HeaderValue::from_static("application/json"))
+        .body("{\"content\": \"hello from server\"}")
+        .send()
+        .unwrap();
+
+    assert!(resp.status().is_success());
+
+    let message = connection.recv_message().unwrap();
+    assert_eq!(OwnedMessage::Text("hello from server".to_string()), message);
 
     drop(test_control);
 }
