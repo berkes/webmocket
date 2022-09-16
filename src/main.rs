@@ -107,21 +107,24 @@ async fn handle_socket(socket: WebSocket, app_state: SharedState) {
 
 async fn read_from_ws(mut receiver: SplitStream<WebSocket>, app_state: SharedState) {
     loop {
-        if let Some(msg) = receiver.next().await {
-            match msg.expect("read message") {
-                WsMessage::Text(t) => {
-                    app_state
-                        .received_ws_messages
-                        .write()
-                        .unwrap()
-                        .push(t.clone());
-                    info!("client to server: {:?}", t);
-                }
-                WsMessage::Close(_) => {
-                    info!("client disconnected");
-                    return;
-                }
-                _ => info!("ignoring non-text message"),
+        if let Some(msg_result) = receiver.next().await {
+            match msg_result {
+                Ok(msg) => match msg {
+                    WsMessage::Text(t) => {
+                        app_state
+                            .received_ws_messages
+                            .write()
+                            .unwrap()
+                            .push(t.clone());
+                        info!("client to server: {:?}", t);
+                    }
+                    WsMessage::Close(_) => {
+                        info!("client disconnected");
+                        return;
+                    }
+                    _ => info!("ignoring non-text message"),
+                },
+                Err(err) => error!("{}", err),
             }
         }
 
