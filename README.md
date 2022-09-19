@@ -28,17 +28,8 @@ a websocket.
     # > my name is Foo and I am a Bar
     # > { "message": "this would be JSON" }
     ```
-    Leave this running for now.
 
-3. Fire websocket messages to the client using a normal HTTP library. e.g. `curl`.
-    ```
-    curl -X POST -H"Content-type: application/json" \
-      --data '{"content": "Hello from the server"}' \
-      http://127.0.0.1:3000/messages
-    ```
-    We should see wscat print the message to the console.
-
-4. Check messages received from client:
+3. Check messages received from client:
     ```bash
     curl http://127.0.0.1:3000/messages | jq
     # [
@@ -47,6 +38,15 @@ a websocket.
     #   "{ \"message\": \"this would be JSON\" }"
     # ]
     ```
+
+4. Fire websocket messages to the client using a normal HTTP library. e.g. `curl`.
+    ```
+    wscat --connect http://127.0.0.1:3000/ws
+    curl -X POST -H"Content-type: text/plain; charset=UTF-8" \
+      --data 'Hello from the server 👋' \
+      http://127.0.0.1:3000/messages
+    ```
+    We should see wscat print the message to the console.
 
 ### Install
 

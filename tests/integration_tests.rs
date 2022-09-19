@@ -66,15 +66,21 @@ fn test_can_send_messages_to_client() {
     let client = reqwest::blocking::Client::new();
     let resp = client
         .post(format_url(port, "messages"))
-        .header(CONTENT_TYPE, HeaderValue::from_static("application/json"))
-        .body("{\"content\": \"hello from server\"}")
+        .header(
+            CONTENT_TYPE,
+            HeaderValue::from_static("text/plain; charset=UTF-8"),
+        )
+        .body("hello from server 👋")
         .send()
         .unwrap();
 
     assert!(resp.status().is_success());
 
     let message = connection.recv_message().unwrap();
-    assert_eq!(OwnedMessage::Text("hello from server".to_string()), message);
+    assert_eq!(
+        OwnedMessage::Text("hello from server 👋".to_string()),
+        message
+    );
 
     drop(test_control);
 }

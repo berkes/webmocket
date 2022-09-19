@@ -10,21 +10,13 @@ use futures::{
     stream::{SplitSink, SplitStream, StreamExt},
 };
 use log::{debug, error, info};
-use serde::{Deserialize, Serialize};
-use std::{
-    fmt::Display,
-    sync::{Arc, RwLock},
-};
+use serde::Serialize;
+use std::sync::{Arc, RwLock};
 use tokio::sync::broadcast;
 
 use crate::config::Config;
 
 mod config;
-
-#[derive(Deserialize)]
-struct MockMessage {
-    content: String,
-}
 
 type SharedState = Arc<AppState>;
 
@@ -36,12 +28,6 @@ struct AppState {
 #[derive(Serialize)]
 struct MessageList {
     messages: Vec<String>,
-}
-
-impl Display for MockMessage {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.content)
-    }
 }
 
 #[tokio::main]
@@ -81,11 +67,8 @@ async fn list_messages(Extension(app_state): Extension<SharedState>) -> impl Int
     (StatusCode::OK, Json(messages))
 }
 
-async fn create_message(
-    Json(payload): Json<MockMessage>,
-    app_state: Extension<SharedState>,
-) -> impl IntoResponse {
-    match app_state.tx.send(payload.content.clone()) {
+async fn create_message(payload: String, app_state: Extension<SharedState>) -> impl IntoResponse {
+    match app_state.tx.send(payload.clone()) {
         Ok(_) => debug!("generating mock websocket message: {}", payload),
         Err(_) => error!("failed generating websocket message"),
     }
