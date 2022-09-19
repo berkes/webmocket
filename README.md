@@ -9,6 +9,7 @@ I needed this for e2e and integration testing a bot that listened on
 a websocket.
 
 [![Build Status](https://cloud.drone.io/api/badges/berkes/webmocket/status.svg?ref=refs/heads/main)](https://cloud.drone.io/berkes/webmocket)
+[![Crates.io](https://img.shields.io/crates/d/webmocket)](https://crates.io/crates/webmocket)
 
 ## webmocket
 
