@@ -9,14 +9,17 @@ use futures::{
     sink::SinkExt,
     stream::{SplitSink, SplitStream, StreamExt},
 };
-use log::{debug, error, info};
+use tower_http::trace::TraceLayer;
+use tracing::{info, debug, error};
 use serde::Serialize;
 use std::sync::{Arc, RwLock};
 use tokio::sync::broadcast;
 
 use crate::config::Config;
+use crate::http_utils::init_tracing;
 
 mod config;
+mod http_utils;
 
 type SharedState = Arc<AppState>;
 
@@ -32,10 +35,11 @@ struct MessageList {
 
 #[tokio::main]
 async fn main() {
-    env_logger::init();
+    init_tracing();
     let config = Config::from_env();
     let addr = config.socket_addr();
-    info!("Listening on {}", addr);
+    info!("🚀 Service started on {}", &addr);
+    info!("🔌 Socket listening at {}{}", &addr, &config.ws_path);
 
     let received_ws_messages = RwLock::new(vec![]);
     let (tx, _rx) = broadcast::channel(100);
@@ -48,6 +52,7 @@ async fn main() {
         .route("/messages", get(list_messages))
         .route("/messages", post(create_message))
         .route(&config.ws_path, get(ws_handler))
+        .layer(TraceLayer::new_for_http())
         .layer(Extension(app_state));
 
     axum::Server::bind(&addr)
@@ -82,6 +87,7 @@ async fn ws_handler(
 }
 
 async fn handle_socket(socket: WebSocket, app_state: SharedState) {
+    info!("client upgraded to websocket");
     let (ws_sender, ws_receiver) = socket.split();
 
     tokio::spawn(read_from_ws(ws_receiver, app_state.clone()));

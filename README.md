@@ -15,7 +15,7 @@ a websocket.
 
 1. Start the webmocket webserver.
     ```bash
-    RUST_LOG=info cargo run
+    cargo run
     # 2022-09-15T14:38:07Z INFO  webmocket] Listening on 127.0.0.1:3000
     ```
 
@@ -74,7 +74,7 @@ Webmocket is configured through env vars. These must be set before starting.
 
 E.g. to set all variables, one could run:
 ```bash
-WEBMOCKET_ADDR=127.0.0.2 WEBMOCKET_PORT=8080 WEBMOCKET_WS_PATH="/messages/user" RUST_LOG=info cargo run
+WEBMOCKET_ADDR=127.0.0.2 WEBMOCKET_PORT=8080 WEBMOCKET_WS_PATH="/messages/user" cargo run
 ```
 ### Test
 
