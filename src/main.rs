@@ -9,11 +9,11 @@ use futures::{
     sink::SinkExt,
     stream::{SplitSink, SplitStream, StreamExt},
 };
-use tower_http::trace::TraceLayer;
-use tracing::{info, debug, error};
 use serde::Serialize;
 use std::sync::{Arc, RwLock};
 use tokio::sync::broadcast;
+use tower_http::trace::TraceLayer;
+use tracing::{debug, error, info};
 
 use crate::config::Config;
 use crate::http_utils::init_tracing;
