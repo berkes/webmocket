@@ -15,7 +15,7 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             port: 3000,
-            address: IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
+            address: IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)),
             ws_path: String::from("/ws"),
         }
     }
