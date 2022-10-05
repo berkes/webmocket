@@ -76,6 +76,25 @@ E.g. to set all variables, one could run:
 ```bash
 WEBMOCKET_ADDR=127.0.0.2 WEBMOCKET_PORT=8080 WEBMOCKET_WS_PATH="/messages/user" cargo run
 ```
+
+### Docker
+
+Alternative is to run webmocket in a container. Usefull in e.g. a CI pipeline,
+or when you don't want or don't have cargo around.
+
+`docker run --rm --detach --expose 3000:3000 berkes/wemocket:latest`
+
+Environment variables as described under *Configure* can be passed in to
+configure the service. For example:
+
+`docker run --rm --detach --expose 3000:3000 --env WEBMOCKET_WS_PATH=/chat/stream`
+
+This will run the webmocket service with the websocket endpoint on
+http://0.0.0.0:3000/chat/stream.
+
+Note: The port 3000 is hardcoded in the image so changing the `WEBMOCKET_PORT`
+to anything other than 3000 won't work.
+
 ### Test
 
 Get the source-code, then
