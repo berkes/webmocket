@@ -51,7 +51,7 @@ mod tests {
     #[test]
     fn config_has_defaults() {
         let sut = Config::default();
-        assert_eq!("127.0.0.1".parse(), Ok(sut.address));
+        assert_eq!("0.0.0.0".parse(), Ok(sut.address));
         assert_eq!(3000, sut.port);
         assert_eq!(String::from("/ws"), sut.ws_path)
     }
@@ -59,7 +59,7 @@ mod tests {
     #[test]
     fn socket_addr() {
         let sut = Config::default();
-        assert_eq!("127.0.0.1:3000".parse(), Ok(sut.socket_addr()));
+        assert_eq!("0.0.0.0:3000".parse(), Ok(sut.socket_addr()));
     }
 
     #[test]

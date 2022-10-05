@@ -102,7 +102,7 @@ impl Drop for TestControl {
 }
 
 fn format_url(port: u16, path: &str) -> String {
-    format!("http://127.0.0.1:{}/{}", port, path)
+    format!("http://0.0.0.0:{}/{}", port, path)
 }
 
 fn start_service(port: u16) -> Child {
@@ -115,7 +115,7 @@ fn start_service(port: u16) -> Child {
 
 fn wait_ws_reachable(port: u16) {
     let timeout = std::time::Duration::new(10, 0);
-    let addr = SocketAddr::new("127.0.0.1".parse().unwrap(), port);
+    let addr = SocketAddr::new("0.0.0.0".parse().unwrap(), port);
     // The socketaddr connect_timeout will fail if the service hasn't started
     // at all. So we add a thread::sleep here.
     // TODO: Some sort of loop that reruns if connect() fails; essentially building our own
