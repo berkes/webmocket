@@ -15,7 +15,7 @@ a websocket.
 
 1. Start the webmocket webserver.
     ```bash
-    cargo run
+    webmocket # or "cargo run"
     # 2022-09-15T14:38:07Z INFO  webmocket] Listening on 127.0.0.1:3000
     ```
 
