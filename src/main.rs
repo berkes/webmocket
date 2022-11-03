@@ -23,9 +23,15 @@ mod http_utils;
 
 type SharedState = Arc<AppState>;
 
+#[derive(Clone)]
+enum BusMessage {
+    Ping,
+    Message(String),
+}
+
 struct AppState {
     received_ws_messages: RwLock<Vec<String>>,
-    tx: broadcast::Sender<String>,
+    tx: broadcast::Sender<BusMessage>,
 }
 
 #[derive(Serialize)]
@@ -51,6 +57,7 @@ async fn main() {
     let app = Router::new()
         .route("/messages", get(list_messages))
         .route("/messages", post(create_message))
+        .route("/ping", post(create_ping))
         .route(&config.ws_path, get(ws_handler))
         .layer(TraceLayer::new_for_http())
         .layer(Extension(app_state));
@@ -73,9 +80,16 @@ async fn list_messages(Extension(app_state): Extension<SharedState>) -> impl Int
 }
 
 async fn create_message(payload: String, app_state: Extension<SharedState>) -> impl IntoResponse {
-    match app_state.tx.send(payload.clone()) {
+    match app_state.tx.send(BusMessage::Message(payload.clone())) {
         Ok(_) => debug!("generating mock websocket message: {}", payload),
         Err(_) => error!("failed generating websocket message"),
+    }
+}
+
+async fn create_ping(app_state: Extension<SharedState>) -> impl IntoResponse {
+    match app_state.tx.send(BusMessage::Ping) {
+        Ok(_) => debug!("generating mock websocket ping"),
+        Err(_) => error!("failed generating websocket ping"),
     }
 }
 
@@ -107,6 +121,14 @@ async fn read_from_ws(mut receiver: SplitStream<WebSocket>, app_state: SharedSta
                             .push(t.clone());
                         info!("client to server: {:?}", t);
                     }
+                    WsMessage::Pong(_) => {
+                        app_state
+                            .received_ws_messages
+                            .write()
+                            .unwrap()
+                            .push("pong".to_string());
+                        info!("client to server: Pong");
+                    }
                     WsMessage::Close(_) => {
                         info!("client disconnected");
                         return;
@@ -124,12 +146,23 @@ async fn read_from_ws(mut receiver: SplitStream<WebSocket>, app_state: SharedSta
 async fn write_to_ws(mut sender: SplitSink<WebSocket, WsMessage>, app_state: SharedState) {
     let mut rx = app_state.tx.subscribe();
     loop {
-        if let Ok(to_send) = rx.recv().await {
-            sender
-                .send(WsMessage::Text(to_send.clone()))
-                .await
-                .expect("deliver message");
-            info!("server to client: {:?}", to_send);
+        if let Ok(message) = rx.recv().await {
+            match message {
+                BusMessage::Ping => {
+                    sender
+                        .send(WsMessage::Ping(vec![]))
+                        .await
+                        .expect("deliver ping");
+                    info!("server to client: Ping");
+                }
+                BusMessage::Message(to_send) => {
+                    sender
+                        .send(WsMessage::Text(to_send.clone()))
+                        .await
+                        .expect("deliver message");
+                    info!("server to client: {:?}", to_send);
+                }
+            };
         }
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
     }
