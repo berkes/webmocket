@@ -26,6 +26,7 @@ type SharedState = Arc<AppState>;
 #[derive(Clone)]
 enum BusMessage {
     Ping,
+    Pong,
     Message(String),
 }
 
@@ -58,6 +59,7 @@ async fn main() {
         .route("/messages", get(list_messages))
         .route("/messages", post(create_message))
         .route("/ping", post(create_ping))
+        .route("/pong", post(create_pong))
         .route(&config.ws_path, get(ws_handler))
         .layer(TraceLayer::new_for_http())
         .layer(Extension(app_state));
@@ -90,6 +92,13 @@ async fn create_ping(app_state: Extension<SharedState>) -> impl IntoResponse {
     match app_state.tx.send(BusMessage::Ping) {
         Ok(_) => debug!("generating mock websocket ping"),
         Err(_) => error!("failed generating websocket ping"),
+    }
+}
+
+async fn create_pong(app_state: Extension<SharedState>) -> impl IntoResponse {
+    match app_state.tx.send(BusMessage::Pong) {
+        Ok(_) => debug!("generating mock websocket pong"),
+        Err(_) => error!("failed generating websocket pong"),
     }
 }
 
@@ -129,6 +138,14 @@ async fn read_from_ws(mut receiver: SplitStream<WebSocket>, app_state: SharedSta
                             .push("pong".to_string());
                         info!("client to server: Pong");
                     }
+                    WsMessage::Ping(_) => {
+                        app_state
+                            .received_ws_messages
+                            .write()
+                            .unwrap()
+                            .push("ping".to_string());
+                        info!("client to server: Ping");
+                    }
                     WsMessage::Close(_) => {
                         info!("client disconnected");
                         return;
@@ -154,6 +171,13 @@ async fn write_to_ws(mut sender: SplitSink<WebSocket, WsMessage>, app_state: Sha
                         .await
                         .expect("deliver ping");
                     info!("server to client: Ping");
+                }
+                BusMessage::Pong => {
+                    sender
+                        .send(WsMessage::Pong(vec![]))
+                        .await
+                        .expect("deliver pong");
+                    info!("server to client: Pong");
                 }
                 BusMessage::Message(to_send) => {
                     sender

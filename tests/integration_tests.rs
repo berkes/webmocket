@@ -111,8 +111,33 @@ fn test_can_send_ping() {
 }
 
 #[test]
-fn test_can_read_pong() {
+fn test_can_send_pong() {
     let port = 3005;
+    let process = start_service(port);
+    let test_control = TestControl::new(process);
+
+    wait_ws_reachable(port);
+
+    let mut connection = ClientBuilder::new(&format_url(port, "ws"))
+        .unwrap()
+        .connect_insecure()
+        .unwrap();
+
+    let client = reqwest::blocking::Client::new();
+    let resp = client.post(format_url(port, "pong")).send().unwrap();
+
+    assert!(resp.status().is_success());
+
+    let message = connection.recv_message().unwrap();
+
+    assert!(message.is_pong());
+
+    drop(test_control);
+}
+
+#[test]
+fn test_can_read_pong() {
+    let port = 3006;
     let process = start_service(port);
     let test_control = TestControl::new(process);
 
