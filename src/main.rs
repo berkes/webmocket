@@ -2,7 +2,7 @@ use axum::{
     extract::ws::{Message as WsMessage, WebSocket, WebSocketUpgrade},
     http::StatusCode,
     response::IntoResponse,
-    routing::{get, post},
+    routing::{delete, get, post},
     Extension, Json, Router,
 };
 use futures::{
@@ -58,6 +58,7 @@ async fn main() {
     let app = Router::new()
         .route("/messages", get(list_messages))
         .route("/messages", post(create_message))
+        .route("/messages", delete(reset_messages))
         .route("/ping", post(create_ping))
         .route("/pong", post(create_pong))
         .route(&config.ws_path, get(ws_handler))
@@ -85,6 +86,16 @@ async fn create_message(payload: String, app_state: Extension<SharedState>) -> i
     match app_state.tx.send(BusMessage::Message(payload.clone())) {
         Ok(_) => debug!("generating mock websocket message: {}", payload),
         Err(_) => error!("failed generating websocket message"),
+    }
+}
+
+async fn reset_messages(app_state: Extension<SharedState>) -> impl IntoResponse {
+    match app_state.received_ws_messages.write() {
+        Ok(mut messages) => {
+            *messages = vec![];
+            debug!("resetting all messages");
+        }
+        Err(_) => error!("failed resetting messages"),
     }
 }
 

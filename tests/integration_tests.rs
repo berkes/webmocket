@@ -161,6 +161,39 @@ fn test_can_read_pong() {
     drop(test_control);
 }
 
+#[test]
+fn test_can_reset() {
+    let port = 3007;
+    let process = start_service(port);
+    let test_control = TestControl::new(process);
+
+    wait_ws_reachable(port);
+
+    let mut connection = ClientBuilder::new(&format_url(port, "ws"))
+        .unwrap()
+        .connect_insecure()
+        .unwrap();
+
+    // First, send one message to the server.
+    let message = Message::text("one message");
+    connection.send_message(&message).unwrap();
+
+    // Then call reset: DELETE messages
+    let client = reqwest::blocking::Client::new();
+    let resp = client.delete(format_url(port, "messages")).send().unwrap();
+    assert!(resp.status().is_success());
+
+    // And check that now the messages are empty
+    let messages: Vec<String> = reqwest::blocking::get(format_url(port, "messages"))
+        .expect("fetch messages")
+        .json::<Vec<String>>()
+        .expect("map messages");
+    let expected: Vec<String> = vec![];
+    assert_eq!(expected, messages);
+
+    drop(test_control);
+}
+
 struct TestControl {
     service: Child,
 }
