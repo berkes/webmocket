@@ -1,9 +1,14 @@
 # WebMocket
 
-Websocket server for testing and development.
+Websocket server for (integration)testing and development of a websocket client.
 
 * Send custom messages to a client.
 * Record messages sent by client.
+
+This server is controlled with HTTP-requests. The client being tested, will
+connect to it with a websocket and then we can interact with this client by
+sending HTTP requests at an API. That same API can be used to check what
+messages this client has sent to the server.
 
 I needed this for e2e and integration testing a bot that listened on
 a websocket.
