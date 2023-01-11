@@ -136,6 +136,7 @@ it.
 
 If needs arise, or pull-requests arrive, some additional features could be added:
 
+* [ ] Make it a library to include in tests rather than running it as standalone service.
 * [ ] Proxy to an actual websocket and record messages as they would be sent server to client.
 * [ ] Proxy to an actual websocket and record messages as they would be sent client to server.
 * [ ] Store these recorded messages [VCR](https://github.com/vcr/vcr) style (though not nessecarily that format).
