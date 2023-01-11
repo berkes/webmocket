@@ -162,8 +162,34 @@ fn test_can_read_pong() {
 }
 
 #[test]
-fn test_can_reset() {
+fn test_can_close() {
     let port = 3007;
+    let process = start_service(port);
+    let test_control = TestControl::new(process);
+
+    wait_ws_reachable(port);
+
+    let mut connection = ClientBuilder::new(&format_url(port, "ws"))
+        .unwrap()
+        .connect_insecure()
+        .unwrap();
+
+    let client = reqwest::blocking::Client::new();
+    let resp = client
+        .delete(format_url(port, "connections"))
+        .send()
+        .unwrap();
+    assert_eq!(200, resp.status());
+
+    let message = connection.recv_message().unwrap();
+    assert!(message.is_close());
+
+    drop(test_control);
+}
+
+#[test]
+fn test_can_reset() {
+    let port = 3008;
     let process = start_service(port);
     let test_control = TestControl::new(process);
 

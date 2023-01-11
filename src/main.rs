@@ -28,6 +28,7 @@ enum BusMessage {
     Ping,
     Pong,
     Message(String),
+    Close,
 }
 
 struct AppState {
@@ -61,6 +62,7 @@ async fn main() {
         .route("/messages", delete(reset_messages))
         .route("/ping", post(create_ping))
         .route("/pong", post(create_pong))
+        .route("/connections", delete(close_connection))
         .route(&config.ws_path, get(ws_handler))
         .layer(TraceLayer::new_for_http())
         .layer(Extension(app_state));
@@ -110,6 +112,13 @@ async fn create_pong(app_state: Extension<SharedState>) -> impl IntoResponse {
     match app_state.tx.send(BusMessage::Pong) {
         Ok(_) => debug!("generating mock websocket pong"),
         Err(_) => error!("failed generating websocket pong"),
+    }
+}
+
+async fn close_connection(app_state: Extension<SharedState>) -> impl IntoResponse {
+    match app_state.tx.send(BusMessage::Close) {
+        Ok(_) => debug!("closing connection"),
+        Err(_) => error!("failed to close connection"),
     }
 }
 
@@ -197,6 +206,10 @@ async fn write_to_ws(mut sender: SplitSink<WebSocket, WsMessage>, app_state: Sha
                         .expect("deliver message");
                     info!("server to client: {:?}", to_send);
                 }
+                BusMessage::Close => sender
+                    .send(WsMessage::Close(None))
+                    .await
+                    .expect("server to client: Close"),
             };
         }
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;

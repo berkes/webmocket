@@ -49,6 +49,17 @@ a websocket.
     ```
     We should see wscat print the message to the console.
 
+6. Check ping/pong
+    ```
+    wscat --connect http://127.0.0.1:3000/ws --show-ping-pong
+    curl -X POST -H"Content-type: text/plain; charset=UTF-8" \
+      --data 'Hello from the server 👋' \
+      http://127.0.0.1:3000/ping
+    curl http://127.0.0.1:3000/messages
+    ```
+    We should see wscat replying to the Ping from the server with a Pong.
+    We can then check that the server recieved a pong.
+
 ### Install
 
 In order to install the platform on development machine, run
