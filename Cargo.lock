@@ -2157,7 +2157,6 @@ dependencies = [
  "assert_cmd",
  "axum",
  "futures 0.3.24",
- "log 0.4.17",
  "reqwest",
  "serde",
  "temp-env",
