@@ -25,6 +25,17 @@ jobs:
     - name: Run tests
       run: cargo test --verbose --all
 
+  publish_crate:
+    name: Push crate to crates.io
+    needs: build
+    runs_on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Publish Crate
+        run: cargo publish --token ${{ secrets.CRATES_API_TOKEN }}
+
   push_to_registry:
 
     name: Push Docker image to Docker Hub
