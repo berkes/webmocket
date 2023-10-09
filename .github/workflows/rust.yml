@@ -28,7 +28,7 @@ jobs:
   publish_crate:
     name: Push crate to crates.io
     needs: build
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out the repo
