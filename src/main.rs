@@ -9,7 +9,6 @@ use futures::{
     sink::SinkExt,
     stream::{SplitSink, SplitStream, StreamExt},
 };
-use serde::Serialize;
 use std::sync::{Arc, RwLock};
 use tokio::sync::broadcast;
 use tower_http::trace::TraceLayer;
@@ -34,11 +33,6 @@ enum BusMessage {
 struct AppState {
     received_ws_messages: RwLock<Vec<String>>,
     tx: broadcast::Sender<BusMessage>,
-}
-
-#[derive(Serialize)]
-struct MessageList {
-    messages: Vec<String>,
 }
 
 #[tokio::main]
